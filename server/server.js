@@ -6,16 +6,14 @@ import cookieParser from "cookie-parser";
 import { connectDB } from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import testRoutes from "./routes/testRoutes.js";
+import productRoutes from "./routes/productRoutes.js"; // <--- Updated to ES import
 
 dotenv.config();
 
 const app = express();
-
 const PORT = process.env.PORT || 5000;
 
-const allowedOrigins = [
-  process.env.CLIENT_URL,
-].filter(Boolean);
+const allowedOrigins = [process.env.CLIENT_URL].filter(Boolean);
 
 app.use(
   cors({
@@ -24,7 +22,6 @@ app.use(
         callback(null, true);
         return;
       }
-
       callback(new Error("Not allowed by CORS"));
     },
     credentials: true,
@@ -32,23 +29,19 @@ app.use(
 );
 
 app.use(express.json());
-
 app.use(cookieParser());
 
 app.get("/api/health", (req, res) => {
-  res.json({
-    status: "ok",
-  });
+  res.json({ status: "ok" });
 });
 
 app.use("/api/auth", authRoutes);
-
 app.use("/api/test", testRoutes);
+app.use("/api/products", productRoutes);
 
 const startServer = async () => {
   try {
     await connectDB();
-
     app.listen(PORT, () => {
       console.log(`Server running on http://localhost:${PORT}`);
     });
